@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Mark" representedClassName="Mark" syncable="YES" codeGenerationType="class">
+        <attribute name="latitude" optional="YES" attributeType="String"/>
+        <attribute name="logitude" optional="YES" attributeType="String"/>
+        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Photo" inverseName="mark" inverseEntity="Photo"/>
+    </entity>
+    <entity name="Photo" representedClassName="Photo" syncable="YES" codeGenerationType="class">
+        <attribute name="img" optional="YES" attributeType="Binary"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <relationship name="mark" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Mark" inverseName="photos" inverseEntity="Mark"/>
+    </entity>
+    <elements>
+        <element name="Photo" positionX="-341.859375" positionY="-18.1640625" width="128" height="88"/>
+        <element name="Mark" positionX="-27.9765625" positionY="-17.3046875" width="128" height="88"/>
+    </elements>
+</model>
