@@ -17,21 +17,15 @@ class DataController {
   var viewContext: NSManagedObjectContext {
     return persistentContainer.viewContext
   }
-  let backgroundContext:NSManagedObjectContext!
   
   
   init(modelName: String) {
     persistentContainer = NSPersistentContainer(name: modelName)
-    
-    backgroundContext = persistentContainer.newBackgroundContext()
   }
   
   
   func configureContexts() {
     viewContext.automaticallyMergesChangesFromParent = true
-    backgroundContext.automaticallyMergesChangesFromParent = true
-    
-    backgroundContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
     viewContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
   }
   
@@ -58,6 +52,12 @@ class DataController {
     return []
   }
   
+  func save() throws {
+      if viewContext.hasChanges {
+          try viewContext.save()
+      }
+  }
+  
 }
 
 extension DataController {
@@ -79,3 +79,25 @@ extension DataController {
   }
 }
 
+
+extension DataController {
+    func fetchLocation(_ predicate: NSPredicate, sorting: NSSortDescriptor? = nil) throws -> Mark? {
+        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
+        fr.predicate = predicate
+        if let sorting = sorting {
+            fr.sortDescriptors = [sorting]
+        }
+        guard let location = (try viewContext.fetch(fr) as! [Mark]).first else {
+            return nil
+        }
+        return location
+    }
+    
+    func fetchAllLocation() throws -> [Mark]? {
+        let fr = NSFetchRequest<NSFetchRequestResult>(entityName: "Pin")
+        guard let pin = try viewContext.fetch(fr) as? [Mark] else {
+            return nil
+        }
+        return pin
+    }
+}

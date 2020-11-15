@@ -11,6 +11,9 @@ import CoreData
 extension Photo {
   
   public override func awakeFromInsert() {
-      super.awakeFromInsert()
+    super.awakeFromInsert()
+    url = URL(string: "")
+    title = String()
+    img = nil
   }
 }

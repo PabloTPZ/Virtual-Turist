@@ -22,7 +22,6 @@ class TravelViewController: UIViewController, MKMapViewDelegate {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    dataController = DataController.shared
     dataController.load()
     initView()
     
@@ -57,6 +56,11 @@ class TravelViewController: UIViewController, MKMapViewDelegate {
       print("error")
     }
   }
+  
+  override func setEditing(_ editing: Bool, animated: Bool) {
+    super.setEditing(editing, animated: animated)
+    footerDeleteButton.isHidden = !editing
+  }
 
   func markMap(mark: CLLocationCoordinate2D) {
     markMapPoint = MKPointAnnotation()
@@ -66,7 +70,12 @@ class TravelViewController: UIViewController, MKMapViewDelegate {
   
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if segue.destination is PhotoViewController {
-      print("--------")
+      guard let mark = sender as? Mark else {
+        return
+      }
+      let controller = segue.destination as! PhotoViewController
+      controller.dataController = dataController
+      controller.mark = mark
     }
   }
   
@@ -76,10 +85,22 @@ class TravelViewController: UIViewController, MKMapViewDelegate {
     }
     
     mapView.deselectAnnotation(annotation, animated: true)
-    let lat = String(annotation.coordinate.latitude)
-    let lon = String(annotation.coordinate.longitude)
- 
-    performSegue(withIdentifier: "showPhotos", sender: nil)
+    let markSelected = Mark(context: dataController.viewContext)
+    markSelected.latitude = String(annotation.coordinate.latitude)
+    markSelected.logitude = String(annotation.coordinate.longitude)
+    
+    if isEditing {
+      map.removeAnnotation(annotation)
+      dataController.viewContext.delete(markSelected)
+      do {
+        try self.dataController.viewContext.save()
+      } catch {
+        print("Unable to save the photo")
+      }
+        return
+    }
+  
+    performSegue(withIdentifier: "showPhotos", sender: markSelected)
   }
   
   func addMark() {
